@@ -24,6 +24,8 @@ services:
       dockerfile: ./docker/backend/Dockerfile
     volumes:
       - facade:/augur/facade
+      - ./repo_groups.csv:/repo_groups.csv
+      - ./repos.csv:/repos.csv
     restart: unless-stopped
     ports:
       - 5002:5000

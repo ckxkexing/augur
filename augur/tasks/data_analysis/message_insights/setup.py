@@ -42,7 +42,7 @@ setup(
         'h5py~=3.6.0',
         'scikit-image==0.19.1',
         'joblib==1.0.1',
-        'xgboost',
+        'xgboost==1.4.2',
         'bs4==0.0.1',
         'xlrd==2.0.1',
         'gensim==4.2.0'
