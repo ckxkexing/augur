@@ -34,7 +34,7 @@ def cli():
 
 @cli.command("start")
 @click.option("--disable-collection", is_flag=True, default=False, help="Turns off data collection workers")
-@click.option("--development", is_flag=True, default=False, help="Enable development mode, implies --disable-collection")
+@click.option("--development", is_flag=True, default=True, help="Enable development mode, implies --disable-collection")
 @test_connection
 @test_db_connection
 def start(disable_collection, development):
@@ -57,12 +57,16 @@ def start(disable_collection, development):
 
     
     with DatabaseSession(logger) as session:
-   
+
         gunicorn_location = os.getcwd() + "/augur/api/gunicorn_conf.py"
         host = session.config.get_value("Server", "host")
         port = session.config.get_value("Server", "port")
 
-        gunicorn_command = f"gunicorn -c {gunicorn_location} -b {host}:{port} --preload augur.api.server:app"
+        if not development:
+            gunicorn_command = f"gunicorn -c {gunicorn_location} -b {host}:{port} --preload augur.api.server:app"
+        else:
+            gunicorn_command = f"gunicorn -c {gunicorn_location} -b {host}:{port} --reload augur.api.server:app"
+
         server = subprocess.Popen(gunicorn_command.split(" "))
 
         time.sleep(3)

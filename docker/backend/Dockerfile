@@ -32,8 +32,9 @@ RUN python3 -m venv /opt/venv
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+# add -e for editable.
 RUN set -ex \
-    && pip install .
+    && pip install -e .
 
 RUN ./scripts/docker/install-go.sh
 # RUN ./scripts/install/workers.sh 
