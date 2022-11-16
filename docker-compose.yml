@@ -26,6 +26,7 @@ services:
       - facade:/augur/facade
       - ./repo_groups.csv:/repo_groups.csv
       - ./repos.csv:/repos.csv
+      - ./augur:/augur/augur  # for development.
     restart: unless-stopped
     ports:
       - 5002:5000
@@ -43,6 +44,15 @@ services:
       - augur-db
       - redis
   
+  augurface:
+    image: augurlabs/augurface:latest
+    build:
+      context: .
+      dockerfile: ./docker/augurface/Dockerfile
+    ports:
+      - "127.0.0.1:8088:8080"
+    depends_on:
+      - augur
 volumes:
   facade:
     driver: local

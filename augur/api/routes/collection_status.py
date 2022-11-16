@@ -43,7 +43,6 @@ def create_routes(server):
 
     @server.app.route('/{}/collection_status/issues'.format(AUGUR_API_VERSION))
     def issue_collection_status():  # TODO: make this name automatic - wrapper?
-        # c = 5 / 0
         issue_collection_sql = s.sql.text("""
             SELECT
                 *
