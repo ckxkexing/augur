@@ -1,61 +1,54 @@
-# Augur NEW Release v0.42.0
+### chenkx找到的启动augur方法
 
-[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+> 提一句
+> 原repo推出了v0.40版本，但是默认的main分支还是老版本。
+> 新版本应该在`augur-new`相关的分支上。
 
-[![Build Docker images](https://github.com/chaoss/augur/actions/workflows/build_docker.yml/badge.svg)](https://github.com/chaoss/augur/actions/workflows/build_docker.yml)
+设置环境变量
+```shell
+export AUGUR_DB_PORT=5434
+export AUGUR_GITHUB_USERNAME=<your github username>
+export AUGUR_GITHUB_API_KEY=<your github token>
+export AUGUR_GITLAB_USERNAME=<your github username>
+export AUGUR_GITLAB_API_KEY=<your github token>
+```
 
-[![Hits-of-Code](https://hitsofcode.com/github/chaoss/augur?branch=main)](https://hitsofcode.com/github/chaoss/augur/view?branch=main)
+#### 使用docker的postgres数据库
+```shell
+docker compose up
+```
+#### 使用本地的postgres数据库
 
+##### 搭建、配置本地postgres数据库
+设置`postgresql.conf`
+```conf
+listen_addresses = '*' 
+```
+使用docker连接数据库，还需要在`pg_hba.conf`后面添加
+```conf
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+host      all             all             0.0.0.0/0               md5
+```
 
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2788/badge)](https://bestpractices.coreinfrastructure.org/projects/2788)
+##### 创建augur数据库以及augur账户，并配置权限
+```sql
+CREATE DATABASE augur;
+CREATE USER augur WITH ENCRYPTED PASSWORD 'augur';
+-- GRANT ALL PRIVILEGES ON DATABASE augur TO augur;
+ALTER DATABASE augur OWNER TO augur;
+```
+##### 还要多设置一个环境变量
 
-## What is Augur?
+wsl中的ip地址可以通过`ip addr | grep eth0`输出中inet后面的地址得到。
+```shell
+# if in wsl:
+export AUGUR_DB=postgresql+psycopg2://augur:augur@172.24.64.222:5432/augur
+# if in windows:
+export AUGUR_DB=postgresql+psycopg2://augur:augur@localhost:5432/augur
+```
+##### 启动augur
 
-Augur is a software suite for collecting and measuring structured data
-about [free](https://www.fsf.org/about/) and [open-source](https://opensource.org/docs/osd) software (FOSS) communities.
-
-We gather trace data for a group of repositories, normalize it into our data model, and provide a variety of metrics about said data. The structure of our data model enables us to synthesize data across various platforms to provide meaningful context for meaningful questions about the way these communities evolve.
-Augur’s main focus is to measure the overall health and sustainability of open source projects, as these types of projects are system critical for nearly every software organization or company. We do this by gathering data about project repositories and normalizing that into our data model to provide useful metrics about your project’s health. For example, one of our metrics is Burstiness. Burstiness – how are short timeframes of intense activity, followed by a corresponding return to a typical pattern of activity, observed in a project?
-
-This can paint a picture of a project’s focus and gain insight into the potential stability of a project and how its typical cycle of updates occurs. 
-
-We are a [CHAOSS](https://chaoss.community) project, and many of our
-metrics are implementations of the metrics defined by our awesome community. You can find a full list of them [here](https://chaoss.community/metrics/).
-
-For more information on [how to get involved on the CHAOSS website](https://chaoss.community/participate/).
-
-## Collecting Data
-
-Augur supports Python3.6 through Python3.9 on all platforms. Python3.10 and above do not yet work because of machine learning worker dependencies. On OSX, you can create a Python 3.9 environment this way: `python3.9 -m venv path/to/venv`.
-
-Augur's main focus is to measure the overall health and sustainability of open source projects.
-
-Augur collects more data about open source software projects than any other available software. Augur's main focus is to measure the overall health and sustainability of open source projects.
-One of Augur's core tenets is a desire to openly gather data that people can trust, and then provide useful and well-defined metrics that help give important context to the larger stories being told by that data. We do this in a variety of ways, one of which is doing all our own data collection in house. We currently collect data from a few main sources:
-
-1. Raw Git commit logs (commits, contributors)
-2. GitHub's API (issues, pull requests, contributors, releases, repository metadata)
-3. The Linux Foundation's [Core Infrastructure Initiative](https://www.coreinfrastructure.org/) API (repository metadata)
-4. [Succinct Code Counter](https://github.com/boyter/scc), a blazingly fast Sloc, Cloc, and Code tool that also performs COCOMO calculations
-
-This data is collected by dedicated data collection workers controlled by Augur, each of which is responsible for querying some subset of these data sources. We are also hard at work building workers for new data sources. If you have an idea for a new one, [please tell us](https://github.com/chaoss/augur/issues/new?template=feature_request.md) - we'd love your input!
-
-
-## Getting Started
-
-If you're interested in collecting data with our tool, the Augur team has worked hard to develop a detailed guide to get started with our project which can be found [in our documentation](https://oss-augur.readthedocs.io/en/main/getting-started/toc.html).
-
-If you're looking to contribute to Augur's code, you can find installation instructions, development guides, architecture references (coming soon), best practices and more in our [developer documentation](https://oss-augur.readthedocs.io/en/main/development-guide/toc.html). Please know that while it's still rather sparse right now,
-but we are actively adding to it all the time. If you get stuck, please feel free to [ask for help](https://github.com/chaoss/augur/issues/new)!
-
-## Contributing
-
-To contribute to Augur, please follow the guidelines found in our [CONTRIBUTING.md](CONTRIBUTING.md) and our [Code of Conduct](CODE_OF_CONDUCT.md). Augur is a welcoming community that is open to all, regardless if you're working on your 1000th contribution to open source or your 1st. We strongly believe that much of what makes open source so great is the incredible communities it brings together, so we invite you to join us!
-
-## License, Copyright, and Funding
-
-Copyright © 2112 University of Nebraska at Omaha, University of Missouri and the CHAOSS Project.
-
-Augur is free software: you can redistribute it and/or modify it under the terms of the MIT License as published by the Open Source Initiative. See the [LICENSE](LICENSE) file for more details.
-
-This work has been funded through the Alfred P. Sloan Foundation, Mozilla, The Reynolds Journalism Institute, contributions from VMWare, Red Hat Software, Grace Hopper's Open Source Day, GitHub, Microsoft, Twitter, Adobe, the Gluster Project, Open Source Summit (NA/Europe), and the Linux Foundation Compliance Summit. Significant design contributors include Kate Stewart, Dawn Foster, Duane O'Brien, Remy Decausemaker, others omitted due to the  memory limitations of project maintainers, and 15 Google Summer of Code Students.
+```shell
+# 使用wsl或者windows中的postgres
+docker compose -f docker-compose-externalDB.yml  up -d
+```
