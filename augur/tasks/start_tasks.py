@@ -11,7 +11,6 @@ from celery import group, chain, chord, signature
 
 
 from augur.tasks.github import *
-from augur.tasks.data_analysis import *
 from augur.tasks.github.detect_move.tasks import detect_github_repo_move
 from augur.tasks.github.releases.tasks import collect_releases
 from augur.tasks.github.repo_info.tasks import collect_repo_info

@@ -32,9 +32,7 @@ if [[ "$REDIS_CONN_STRING" == *"localhost"* ]] || [[ "$REDIS_CONN_STRING" == *"1
 else
     export redis_conn_string=$REDIS_CONN_STRING
 fi
-
 ./scripts/install/config.sh $target
-
 if [[ -f /repo_groups.csv ]]; then
     augur db add-repo-groups /repo_groups.csv
 fi

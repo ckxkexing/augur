@@ -29,12 +29,16 @@ COPY ./scripts/ scripts/
 
 #COPY ./docker/backend/docker.config.json .
 RUN python3 -m venv /opt/venv
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN set -x \
-    && /opt/venv/bin/pip install .
+# add -e for editable.
+RUN set -ex \
+    && pip install -e .
 
 RUN ./scripts/docker/install-go.sh
 # RUN ./scripts/install/workers.sh 
+# RUN ./scripts/docker/nltk_fix.sh
 
 RUN mkdir -p repos/ logs/ facade/
 

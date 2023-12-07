@@ -50,8 +50,15 @@ class Server():
         self.config = self.session.config
         self.engine = self.session.engine
 
-        self.cache_manager = self.create_cache_manager()
-        self.server_cache = self.get_server_cache()
+        # development 开发模式，暂且不用cache
+        # 因为用了cache，保存文件就会出现warning
+        no_use_cache = True
+        if no_use_cache:
+            self.cache_manager = None
+            self.server_cache = None
+        else:
+            self.cache_manager = self.create_cache_manager()
+            self.server_cache = self.get_server_cache()
         self.app = None
         self.show_metadata = False
 
@@ -71,7 +78,6 @@ class Server():
         self.app.url_map.strict_slashes = False
 
         self.app.config['WTF_CSRF_ENABLED'] = False
-
 
         self.logger.debug("Creating API routes...")
         self.create_all_routes()
@@ -224,7 +230,7 @@ class Server():
                 metric_files.append(file_id)
 
         return metric_files
-        
+
     # NOTE: Paramater on=None removed, since it is not used in the function Aug 18, 2022 - Andrew Brain
     def transform(self, func: Any, args: Any=None, kwargs: dict=None, repo_url_base: str=None, orient: str ='records',
         group_by: str=None, aggregate: str='sum', resample=None, date_col: str='date') -> str:
@@ -362,7 +368,6 @@ class Server():
         endpoint_function.__name__ = f"{endpoint_type}_" + func.__name__
         return endpoint_function
 
-        
     def add_standard_metric(self, function: Any, endpoint: str) -> None:
         """Add standard metric routes to the flask app.
         
